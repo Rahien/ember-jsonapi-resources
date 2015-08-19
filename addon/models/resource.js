@@ -388,12 +388,12 @@ const RelatedProxyUtil = Ember.Object.extend({
     @param {Ember.ObjectProxy|Ember.ArrayProxy} proxyFactory
     @return {PromiseProxy} proxy
   */
-  createProxy: function (resource, proxyFactory) {
+  createProxy: function (resource, type, proxyFactory) {
     const relation = this.get('relationship');
     const url = this.proxyUrl(resource, relation);
-    const service = resource.container.lookup('service:' + pluralize(relation));
+    const service = resource.container.lookup('service:' + pluralize(type));
     let promise = this.promiseFromCache(resource, relation, service);
-    promise = promise || service.findRelated(relation, url);
+    promise = promise || service.findRelated(type, url);
     let proxy = proxyFactory.extend(Ember.PromiseProxyMixin, {
       'promise': promise, 'type': relation
     });
@@ -472,18 +472,21 @@ function linksPath(relation) {
 }
 
 /**
-  Helper to setup a has one relationship to another resource
+  Helper to setup a has one relationship to another resource,
+  type is optional and defaults to relation
 
   @method hasOne
   @param {String} relation
+  @param {String} type
 */
-export function hasOne(relation) {
+export function hasOne(relation, type) {
   assertDasherizedHasOneRelation(relation);
   const util = RelatedProxyUtil.create({'relationship': relation});
   const path = linksPath(relation);
+  type = (type ? type : relation)
   return Ember.computed(path, function () {
-    return util.createProxy(this, Ember.ObjectProxy);
-  }).meta({relation: relation, kind: 'hasOne'});
+    return util.createProxy(this, type, Ember.ObjectProxy);
+  }).meta({relation: relation, type: type, kind: 'hasOne'});
 }
 
 function assertDasherizedHasOneRelation(name) {
@@ -498,18 +501,21 @@ function assertDasherizedHasOneRelation(name) {
 }
 
 /**
-  Helper to setup a has many relationship to another resource
+  Helper to setup a has many relationship to another resource,
+  type is optional and defaults to relation
 
   @method hasMany
   @param {String} relation
+  @param {String} type
 */
-export function hasMany(relation) {
+export function hasMany(relation, type) {
   assertDasherizedHasManyRelation(relation);
   const util = RelatedProxyUtil.create({'relationship': relation});
   const path = linksPath(relation);
+  type = (type ? type : relation)
   return Ember.computed(path, function () {
-    return util.createProxy(this, Ember.ArrayProxy);
-  }).meta({relation: relation, kind: 'hasMany'});
+    return util.createProxy(this, type, Ember.ArrayProxy);
+  }).meta({relation: relation, type: type, kind: 'hasMany'});
 }
 
 function assertDasherizedHasManyRelation(name) {
