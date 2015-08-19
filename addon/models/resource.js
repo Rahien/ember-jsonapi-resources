@@ -483,7 +483,7 @@ export function hasOne(relation, type) {
   assertDasherizedHasOneRelation(relation);
   const util = RelatedProxyUtil.create({'relationship': relation});
   const path = linksPath(relation);
-  type = (type ? type : relation)
+  type = (type ? type : relation);
   return Ember.computed(path, function () {
     return util.createProxy(this, type, Ember.ObjectProxy);
   }).meta({relation: relation, type: type, kind: 'hasOne'});
@@ -512,7 +512,7 @@ export function hasMany(relation, type) {
   assertDasherizedHasManyRelation(relation);
   const util = RelatedProxyUtil.create({'relationship': relation});
   const path = linksPath(relation);
-  type = (type ? type : relation)
+  type = (type ? type : relation);
   return Ember.computed(path, function () {
     return util.createProxy(this, type, Ember.ArrayProxy);
   }).meta({relation: relation, type: type, kind: 'hasMany'});
