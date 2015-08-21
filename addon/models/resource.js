@@ -476,17 +476,20 @@ function linksPath(relation) {
   type is optional and defaults to relation
 
   @method hasOne
-  @param {String} relation
-  @param {String} type
+  @param {Object|String} relation
 */
-export function hasOne(relation, type) {
-  assertDasherizedHasOneRelation(relation);
-  const util = RelatedProxyUtil.create({'relationship': relation});
-  const path = linksPath(relation);
-  type = (type ? type : relation);
+export function hasOne(relation) {
+  let relationName = relation;
+  if (typeof relation !== 'string') {
+    relationName = relation.resource;
+  }
+  const util = RelatedProxyUtil.create({'relationship': relationName});
+  const path = linksPath(relationName);
+  assertDasherizedHasOneRelation(relationName);
+  const type = (relation.type ? relation.type : relationName);
   return Ember.computed(path, function () {
     return util.createProxy(this, type, Ember.ObjectProxy);
-  }).meta({relation: relation, type: type, kind: 'hasOne'});
+  }).meta({relation: relationName, type: type, kind: 'hasOne'});
 }
 
 function assertDasherizedHasOneRelation(name) {
@@ -505,17 +508,20 @@ function assertDasherizedHasOneRelation(name) {
   type is optional and defaults to relation
 
   @method hasMany
-  @param {String} relation
-  @param {String} type
+  @param {String|Object} relation
 */
-export function hasMany(relation, type) {
-  assertDasherizedHasManyRelation(relation);
-  const util = RelatedProxyUtil.create({'relationship': relation});
-  const path = linksPath(relation);
-  type = (type ? type : relation);
+export function hasMany(relation) {
+  let relationName = relation;
+  if (typeof relation !== 'string') {
+    relationName = relation.resource;
+  }
+  const util = RelatedProxyUtil.create({'relationship': relationName});
+  const path = linksPath(relationName);
+  assertDasherizedHasManyRelation(relationName);
+  const type = (relation.type ? relation.type : relationName);
   return Ember.computed(path, function () {
     return util.createProxy(this, type, Ember.ArrayProxy);
-  }).meta({relation: relation, type: type, kind: 'hasMany'});
+  }).meta({relation: relationName, type: type, kind: 'hasMany'});
 }
 
 function assertDasherizedHasManyRelation(name) {
